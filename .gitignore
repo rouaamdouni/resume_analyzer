@@ -1,0 +1,7 @@
+*.csv
+*.pdf
+/.idea/
+/__pycache__/
+/job_skills_extended/
+/UpdatedResumeDataSet/
+/Uploaded_Resumes/
