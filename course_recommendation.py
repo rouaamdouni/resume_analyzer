@@ -8,7 +8,7 @@ from nltk.stem.porter import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
 
 ps = PorterStemmer()
-dataset_path = 'Coursera.csv'
+dataset_path = './datasets/Coursera.csv'
 data = pd.read_csv(dataset_path)
 data = data[['Course Name', 'Difficulty Level', 'Course Description', 'Skills', 'Course URL']]
 # print(data.head(5))
@@ -58,7 +58,7 @@ new_df['tags'] = new_df['tags'].apply(stem)  # applying stemming on the tags col
 similarity = cosine_similarity(vectors)
 
 
-def recommend(user_skills, user_job_category):
+def recommendCourse(user_skills, user_job_category):
     # Combine user input into a tag
     user_tags = f"{user_job_category} {user_skills}"
 
@@ -80,5 +80,4 @@ def recommend(user_skills, user_job_category):
         st.write(f"Course Name: {new_df.iloc[index].course_name}")
         st.write(f"Course URL: {data.iloc[index]['Course URL']}")
         st.write("-" * 50)  # Separator for better readability
-
 
