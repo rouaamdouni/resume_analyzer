@@ -174,8 +174,8 @@ def run():
                     "** Note: This score is calculated based on the content that you have added in your Resume. **")
 
                 recommendCourse(recommended_skills, recommended_category)
-                create_user_data_table(cursor)
-                # recommendJob(resume_skills, recommended_category)
+                # create_user_data_table(cursor)
+                recommendJob(resume_skills, recommended_category)
 
                 connection.commit()
                 st.error('Something went wrong..')
