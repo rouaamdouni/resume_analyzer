@@ -1,42 +1,109 @@
-#  else:
-#         ## Admin Side
-#         st.success('Welcome to Admin Side')
-#         # st.sidebar.subheader('**ID / Password Required!**')
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+from database_manager import create_database, get_latest_data,connect_to_database
+import base64
+def get_table_download_link(df, filename, text):
+    csv = df.to_csv(index=False)
+    # some strings <-> bytes conversions necessary here
+    b64 = base64.b64encode(csv.encode()).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
+    return href
+                
+def admin_login():
+    ad_user = st.text_input("Username")
+    ad_password = st.text_input("Password", type='password')
 
-#         ad_user = st.text_input("Username")
-#         ad_password = st.text_input("Password", type='password')
-#         if st.button('Login'):
-#             if ad_user == 'machine_learning_hub' and ad_password == 'mlhub123':
-#                 st.success("Welcome Kushal")
-#                 # Display Data
-#                 cursor.execute('''SELECT*FROM user_data''')
-#                 data = cursor.fetchall()
-#                 st.header("**User's👨‍💻 Data**")
-#                 df = pd.DataFrame(data, columns=['ID', 'Name', 'Email', 'Resume Score', 'Timestamp', 'Total Page',
-#                                                  'Predicted Field', 'User Level', 'Actual Skills', 'Recommended Skills',
-#                                                  'Recommended Course'])
-#                 st.dataframe(df)
-#                 st.markdown(get_table_download_link(df, 'User_Data.csv', 'Download Report'), unsafe_allow_html=True)
-#                 ## Admin Side Data
-#                 query = 'select * from user_data;'
-#                 plot_data = pd.read_sql(query, connection)
+    if st.button('Login'):
+        connection, cursor = connect_to_database()
+        create_database(connection, cursor)
+        if ad_user == 'roua' and ad_password == 'roua':
+            st.success("Welcome Kushal")
+            
+            # Display All Data
+            cursor.execute('''SELECT * FROM user_data''')
+            data_all = cursor.fetchall()
+            st.header("**All User Data**")
+            df_all = pd.DataFrame(data_all, columns=['ID', 'Name', 'Email', 'Resume Score', 'Timestamp', 'Total Page',
+                                                     'Predicted Field', 'User Level', 'Actual Skills', 'Recommended Skills',
+                                                     'Recommended Course'])
+            st.dataframe(df_all)
+            st.markdown(get_table_download_link(df_all, 'All_User_Data.csv', 'Download All Data Report'), unsafe_allow_html=True)
 
-#                 ## Pie chart for predicted field recommendations
-#                 labels = plot_data.Predicted_Field.unique()
-#                 print(labels)
-#                 values = plot_data.Predicted_Field.value_counts()
-#                 print(values)
-#                 st.subheader("📈 **Pie-Chart for Predicted Field Recommendations**")
-#                 fig = px.pie(df, values=values, names=labels, title='Predicted Field according to the Skills')
-#                 st.plotly_chart(fig)
+            # Admin Side Data
+            query = 'SELECT * FROM user_data;'
+            plot_data = pd.read_sql(query, connection)
+        
+            #     # Plot the count of users for each job category
+            fig = px.bar(df_all, x='Predicted Field', title='Count of Users for Each Job Category')
+            fig.update_layout(xaxis_title='Job Category', yaxis_title='Number of Users')
+            st.plotly_chart(fig)
+            # else:
+            #     st.warning("No data available.")
+            # Pie Chart for Resume Scores
+            # st.subheader("Pie Chart for Resume Scores")
+            # resume_score_chart = px.pie(plot_data, names='Resume Score', title='Resume Scores Distribution')
+            # st.plotly_chart(resume_score_chart)
 
-#                 ### Pie chart for User's👨‍💻 Experienced Level
-#                 labels = plot_data.User_level.unique()
-#                 values = plot_data.User_level.value_counts()
-#                 st.subheader("📈 ** Pie-Chart for User's👨‍💻 Experienced Level**")
-#                 fig = px.pie(df, values=values, names=labels, title="Pie-Chart📈 for User's👨‍💻 Experienced Level")
-#                 st.plotly_chart(fig)
+            # Line Chart for Resume Scores Over Time
+            # st.subheader("Line Chart for Resume Scores Over Time")
+            # resume_scores_over_time_chart = px.line(plot_data, x='Timestamp', y='Resume Score', labels={'Resume Score': 'Average Resume Score'},
+            #                                         title='Average Resume Score Over Time')
+            # st.plotly_chart(resume_scores_over_time_chart)
 
+            # Bar Chart for Recommended Skills
+            st.subheader("Bar Chart for Recommended Skills")
+            skills = [skill for skills_list in plot_data['Recommended Skills'] for skill in skills_list]
+            recommended_skills_chart = px.bar(pd.Series(skills).value_counts(), x=pd.Series(skills).unique(),
+                                            y=pd.Series(skills).value_counts(), labels={'y': 'Frequency'},
+                                            title='Recommended Skills Frequency')
+            st.plotly_chart(recommended_skills_chart)
 
-#             else:
-#                 st.error("Wrong ID & Password Provided")
+            # Bar Chart for Recommended Courses
+            st.subheader("Bar Chart for Recommended Courses")
+            recommended_courses_chart = px.bar(plot_data['Recommended Courses'].value_counts(),
+                                                x=plot_data['Recommended Courses'].unique(),
+                                                y=plot_data['Recommended Courses'].value_counts(),
+                                                labels={'y': 'Popularity'}, title='Recommended Courses Popularity')
+            st.plotly_chart(recommended_courses_chart)
+
+            # Bar Chart for User Levels
+            st.subheader("Bar Chart for User Levels")
+            user_levels_chart = px.bar(plot_data['User Level'].value_counts(), x=plot_data['User Level'].unique(),
+                                        y=plot_data['User Level'].value_counts(), labels={'y': 'Number of Users'},
+                                        title='User Levels Distribution')
+            st.plotly_chart(user_levels_chart)
+
+            # Bar Chart for Predicted Fields
+            st.subheader("Bar Chart for Predicted Fields")
+            predicted_fields_chart = px.bar(plot_data['Predicted Field'].value_counts(), x=plot_data['Predicted Field'].unique(),
+                                            y=plot_data['Predicted Field'].value_counts(),
+                                            labels={'y': 'Number of Users'}, title='Predicted Fields Distribution')
+            st.plotly_chart(predicted_fields_chart)
+
+            # Scatter Plot for Resume Scores vs. Number of Pages
+            st.subheader("Scatter Plot for Resume Scores vs. Number of Pages")
+            scatter_chart = px.scatter(plot_data, x='Number of Pages', y='Resume Score', title='Resume Scores vs. Number of Pages')
+            st.plotly_chart(scatter_chart)
+
+            # Bar Chart for Total Pages in Resumes
+            st.subheader("Bar Chart for Total Pages in Resumes")
+            total_pages_chart = px.bar(plot_data['Number of Pages'].value_counts(), x=plot_data['Number of Pages'].unique(),
+                                    y=plot_data['Number of Pages'].value_counts(), labels={'y': 'Number of Users'},
+                                    title='Total Pages in Resumes Distribution')
+            st.plotly_chart(total_pages_chart)
+
+            # Bar Chart for User Engagement Over Time
+            st.subheader("Bar Chart for User Engagement Over Time")
+            user_engagement_chart = px.bar(plot_data.resample('D', on='Timestamp').size(),
+                                            x=plot_data.resample('D', on='Timestamp').size().index,
+                                            y=plot_data.resample('D', on='Timestamp').size(),
+                                            labels={'y': 'Number of Users'}, title='User Engagement Over Time')
+            st.plotly_chart(user_engagement_chart)
+
+            # ... (Continue with other charts if needed)
+
+            # Close the connection
+            connection.close()
+        else:
+            st.error("Invalid username or password. Please try again.")

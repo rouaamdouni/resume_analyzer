@@ -1,17 +1,14 @@
 import pymysql
 
-
 def connect_to_database():
     connection = pymysql.connect(host='localhost', user='root', password='')
     cursor = connection.cursor()
     return connection, cursor
 
-
 def create_database(connection, cursor):
     db_sql = """CREATE DATABASE IF NOT EXISTS SRA;"""
     cursor.execute(db_sql)
     connection.select_db("sra")
-
 
 def create_user_data_table(cursor):
     DB_table_name = 'user_data'
@@ -31,16 +28,20 @@ def create_user_data_table(cursor):
                     """
     cursor.execute(table_sql)
 
-
 def insert_data(cursor, name, email, res_score, timestamp, no_of_pages, reco_field, cand_level, skills,
                 recommended_skills, courses):
     DB_table_name = 'user_data'
-    insert_sql = "insert into " + DB_table_name + """
-    values (0,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+    insert_sql = "INSERT INTO " + DB_table_name + """
+    VALUES (0,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
     rec_values = (
         name, email, str(res_score), timestamp, str(
             no_of_pages), reco_field, cand_level, skills, recommended_skills,
         courses)
     cursor.execute(insert_sql, rec_values)
 
-# Add other functions if needed
+def get_latest_data(cursor):
+    DB_table_name = 'user_data'
+    query = f"SELECT * FROM {DB_table_name} ORDER BY Timestamp DESC LIMIT 1"
+    cursor.execute(query)
+    latest_data = cursor.fetchone()
+    return latest_data
