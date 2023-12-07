@@ -18,26 +18,22 @@ def create_user_data_table(cursor):
                      Email_ID VARCHAR(50) NOT NULL,
                      resume_score VARCHAR(8) NOT NULL,
                      Timestamp VARCHAR(50) NOT NULL,
-                     Page_no VARCHAR(5) NOT NULL,
                      Predicted_Field VARCHAR(25) NOT NULL,
-                     User_level VARCHAR(30) NOT NULL,
                      Actual_skills VARCHAR(300) NOT NULL,
-                     Recommended_skills VARCHAR(300) NOT NULL,
-                     Recommended_courses VARCHAR(600) NOT NULL,
+                     Recommended_skills VARCHAR(300) NOT NULL,  -- Added comma here
                      PRIMARY KEY (ID));
                     """
     cursor.execute(table_sql)
 
-def insert_data(cursor, name, email, res_score, timestamp, no_of_pages, reco_field, cand_level, skills,
-                recommended_skills, courses):
+def insert_data(cursor, name, email, res_score, timestamp, reco_field, skills, recommended_skills):
     DB_table_name = 'user_data'
-    insert_sql = "INSERT INTO " + DB_table_name + """
-    VALUES (0,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+    insert_sql = f"INSERT INTO {DB_table_name} (Name, Email_ID, resume_score, Timestamp, Predicted_Field, Actual_skills, Recommended_skills) VALUES (%s, %s, %s, %s, %s, %s, %s)"
     rec_values = (
-        name, email, str(res_score), timestamp, str(
-            no_of_pages), reco_field, cand_level, skills, recommended_skills,
-        courses)
+        name, email, str(res_score), timestamp, reco_field, skills, recommended_skills
+    )
     cursor.execute(insert_sql, rec_values)
+
+
 
 def get_latest_data(cursor):
     DB_table_name = 'user_data'

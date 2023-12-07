@@ -18,15 +18,14 @@ def admin_login():
         connection, cursor = connect_to_database()
         create_database(connection, cursor)
         if ad_user == 'roua' and ad_password == 'roua':
-            st.success("Welcome Kushal")
+            st.success("Welcome {}".format(ad_user))
             
             # Display All Data
             cursor.execute('''SELECT * FROM user_data''')
             data_all = cursor.fetchall()
             st.header("**All User Data**")
-            df_all = pd.DataFrame(data_all, columns=['ID', 'Name', 'Email', 'Resume Score', 'Timestamp', 'Total Page',
-                                                     'Predicted Field', 'User Level', 'Actual Skills', 'Recommended Skills',
-                                                     'Recommended Course'])
+            df_all = pd.DataFrame(data_all, columns=['ID', 'Name', 'Email', 'Resume Score', 'Timestamp',
+                                                     'Predicted Field', 'Actual Skills', 'Recommended Skills'])
             st.dataframe(df_all)
             st.markdown(get_table_download_link(df_all, 'All_User_Data.csv', 'Download All Data Report'), unsafe_allow_html=True)
 

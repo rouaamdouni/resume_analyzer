@@ -1,9 +1,8 @@
 import io
 import datetime
 import time
-from admin_dash import admin_login
 from course_recommendation import recommendCourse
-from database_manager import connect_to_database, create_database
+from database_manager import connect_to_database, create_database, create_user_data_table, insert_data
 from job_recommender import recommendJob
 from score_calculating import calculate_resume_score
 from skills_recommender import recommend_skills
@@ -164,7 +163,12 @@ def user_login():
                         "** Note: This score is calculated based on the content that you have added in your Resume. **")
 
                     recommendCourse(recommended_skills, recommended_category)
-                    # create_user_data_table(cursor)
+                    create_user_data_table(cursor)
+                    print(resume_data['name'], resume_data['email'], resume_score, timestamp, recommended_category, resume_data['skills'], recommended_skills)
+                    insert_data(cursor, resume_data['name'], resume_data['email'], str(resume_score), timestamp,
+                    recommended_category, str(resume_data['skills']) ,str(recommended_skills))
+
+                    
                     recommendJob(resume_skills, recommended_category)
 
                     connection.commit()
