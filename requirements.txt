@@ -101,7 +101,7 @@ sortedcontainers==2.4.0
 spacy==2.3.9
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5
-srsly==1.0.7
+srsly
 streamlit==1.28.2
 streamlit-tags==1.2.8
 tenacity==8.2.3

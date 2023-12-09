@@ -157,11 +157,6 @@ def user_login():
                     st.warning(
                         "** Note: This score is calculated based on the content that you have added in your Resume. **")
 
-                    # Display the final score
-                    st.success('** Your Resume Writing Score: ' + str(score) + '**')
-                    st.warning(
-                        "** Note: This score is calculated based on the content that you have added in your Resume. **")
-
                     recommendCourse(recommended_skills, recommended_category)
                     create_user_data_table(cursor)
                     print(resume_data['name'], resume_data['email'], resume_score, timestamp, recommended_category, resume_data['skills'], recommended_skills)
