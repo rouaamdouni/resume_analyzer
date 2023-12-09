@@ -75,9 +75,21 @@ def recommendCourse(user_skills, user_job_category):
     course_indices = sorted(enumerate(user_similarity[0]), reverse=True, key=lambda x: x[1])[1:7]
 
     # Display recommended courses
+   # Header
+    st.title("Recommended Courses")
+
+    # Display recommended courses
     st.subheader("Recommended Courses:")
+
+    # Create two columns for course names and URLs
+    col1, col2 = st.columns(2)
+
     for index, _ in course_indices:
-        st.write(f"Course Name: {new_df.iloc[index].course_name}")
-        st.write(f"Course URL: {data.iloc[index]['Course URL']}")
-        st.write("-" * 50)  # Separator for better readability
+        # Display course name in the first column
+        with col1:
+            st.write(f"**Course Name:** {new_df.iloc[index]['course_name']}")
+        
+        # Display course URL in the second column
+        with col2:
+            st.write(f"**Course URL:** {data.iloc[index]['Course URL']}")
 

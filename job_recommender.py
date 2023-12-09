@@ -28,7 +28,8 @@ data['tags'] = data['title'] + data['description'] + data['skills_desc'] + data[
 new_df = data[['title', 'tags']]
 new_df['tags'] = data['tags'].str.replace(',', ' ')
 new_df['title'] = data['title'].str.replace(',', ' ')
-new_df.rename(columns={'title': 'job_title'}, inplace=True)
+new_df['description'] = data['description'].str.replace(',', ' ')
+new_df.rename(columns={'title': 'job_title', 'description': 'job_description'}, inplace=True)
 new_df['tags'] = new_df['tags'].apply(lambda x: str(x).lower() if pd.notna(x) else '')
 
 # Text Vectorization
@@ -71,7 +72,10 @@ def recommendJob(user_skills, user_job_category):
     # Display recommended jobs
     st.subheader("Recommended Jobs:")
     for index, _ in job_indices:
-        st.write(f"Job Title: {new_df.iloc[index].job_title}")
-        st.write(f"Job Description: {data.iloc[index]['description']}")
-        st.write(f"Job URL: {data.iloc[index]['job_posting_url']}")
+        job_description = new_df.iloc[index].job_description
+        words = job_description.split()[:50]
+        truncated_description = ' '.join(words)
+        st.write(f"**Job Title**: {new_df.iloc[index].job_title}")
+        st.write(f"**Job Description:** {truncated_description}...")
+        st.write(f"**Job URL**: {data.iloc[index]['job_posting_url']}")
         st.write("-" * 50)  # Separator for better readability

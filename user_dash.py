@@ -167,11 +167,8 @@ def user_login():
                     print(resume_data['name'], resume_data['email'], resume_score, timestamp, recommended_category, resume_data['skills'], recommended_skills)
                     insert_data(cursor, resume_data['name'], resume_data['email'], str(resume_score), timestamp,
                     recommended_category, str(resume_data['skills']) ,str(recommended_skills))
-
-                    
                     recommendJob(resume_skills, recommended_category)
 
                     connection.commit()
-                    st.error('Something went wrong..')        
-            
+                   
             

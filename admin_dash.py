@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from wordcloud import WordCloud
 from database_manager import create_database, get_latest_data,connect_to_database
 import base64
 def get_table_download_link(df, filename, text):
@@ -37,72 +38,35 @@ def admin_login():
             fig = px.bar(df_all, x='Predicted Field', title='Count of Users for Each Job Category')
             fig.update_layout(xaxis_title='Job Category', yaxis_title='Number of Users')
             st.plotly_chart(fig)
-            # else:
-            #     st.warning("No data available.")
-            # Pie Chart for Resume Scores
-            # st.subheader("Pie Chart for Resume Scores")
-            # resume_score_chart = px.pie(plot_data, names='Resume Score', title='Resume Scores Distribution')
-            # st.plotly_chart(resume_score_chart)
 
-            # Line Chart for Resume Scores Over Time
-            # st.subheader("Line Chart for Resume Scores Over Time")
-            # resume_scores_over_time_chart = px.line(plot_data, x='Timestamp', y='Resume Score', labels={'Resume Score': 'Average Resume Score'},
-            #                                         title='Average Resume Score Over Time')
-            # st.plotly_chart(resume_scores_over_time_chart)
 
-            # Bar Chart for Recommended Skills
-            st.subheader("Bar Chart for Recommended Skills")
-            skills = [skill for skills_list in plot_data['Recommended Skills'] for skill in skills_list]
-            recommended_skills_chart = px.bar(pd.Series(skills).value_counts(), x=pd.Series(skills).unique(),
-                                            y=pd.Series(skills).value_counts(), labels={'y': 'Frequency'},
-                                            title='Recommended Skills Frequency')
-            st.plotly_chart(recommended_skills_chart)
+            #Histogram or box plot showing the distribution of resume scores.
+            fig = px.histogram(df_all, x='Resume Score', title='Distribution of Resume Scores')
+            fig.update_layout(xaxis_title='Resume Score', yaxis_title='Count')
+            st.plotly_chart(fig)
 
-            # Bar Chart for Recommended Courses
-            st.subheader("Bar Chart for Recommended Courses")
-            recommended_courses_chart = px.bar(plot_data['Recommended Courses'].value_counts(),
-                                                x=plot_data['Recommended Courses'].unique(),
-                                                y=plot_data['Recommended Courses'].value_counts(),
-                                                labels={'y': 'Popularity'}, title='Recommended Courses Popularity')
-            st.plotly_chart(recommended_courses_chart)
+            #Line chart showing the number of user registrations over time.
+            df_all['Timestamp'] = pd.to_datetime(df_all['Timestamp'], format="%Y-%m-%d_%H:%M:%S")
+            fig_user_activity = px.line(df_all, x='Timestamp', title='User Activity Over Time')
+            fig_user_activity.update_layout(xaxis_title='Timestamp', yaxis_title='Number of Users')
+            st.plotly_chart(fig_user_activity)
 
-            # Bar Chart for User Levels
-            st.subheader("Bar Chart for User Levels")
-            user_levels_chart = px.bar(plot_data['User Level'].value_counts(), x=plot_data['User Level'].unique(),
-                                        y=plot_data['User Level'].value_counts(), labels={'y': 'Number of Users'},
-                                        title='User Levels Distribution')
-            st.plotly_chart(user_levels_chart)
 
-            # Bar Chart for Predicted Fields
-            st.subheader("Bar Chart for Predicted Fields")
-            predicted_fields_chart = px.bar(plot_data['Predicted Field'].value_counts(), x=plot_data['Predicted Field'].unique(),
-                                            y=plot_data['Predicted Field'].value_counts(),
-                                            labels={'y': 'Number of Users'}, title='Predicted Fields Distribution')
-            st.plotly_chart(predicted_fields_chart)
+            #Pie chart or bar chart showing the distribution of predicted fields for all users.
+            fig_predicted_field = px.pie(df_all, names='Predicted Field', title='Distribution of Predicted Fields')
+            st.plotly_chart(fig_predicted_field)
+            
+            #Word cloud or bar chart showing the most frequently mentioned skills in the "Actual Skills" and "Recommended Skills" columns.
 
-            # Scatter Plot for Resume Scores vs. Number of Pages
-            st.subheader("Scatter Plot for Resume Scores vs. Number of Pages")
-            scatter_chart = px.scatter(plot_data, x='Number of Pages', y='Resume Score', title='Resume Scores vs. Number of Pages')
-            st.plotly_chart(scatter_chart)
+            # Generate word cloud for Actual Skills
+            wordcloud_actual = WordCloud(width=800, height=400, background_color='white').generate(' '.join(df_all['Actual Skills']))
+            st.image(wordcloud_actual.to_image(), caption='Word Cloud for Actual Skills')
 
-            # Bar Chart for Total Pages in Resumes
-            st.subheader("Bar Chart for Total Pages in Resumes")
-            total_pages_chart = px.bar(plot_data['Number of Pages'].value_counts(), x=plot_data['Number of Pages'].unique(),
-                                    y=plot_data['Number of Pages'].value_counts(), labels={'y': 'Number of Users'},
-                                    title='Total Pages in Resumes Distribution')
-            st.plotly_chart(total_pages_chart)
+            # Generate word cloud for Recommended Skills
+            wordcloud_recommended = WordCloud(width=800, height=400, background_color='white').generate(' '.join(df_all['Recommended Skills']))
+            st.image(wordcloud_recommended.to_image(), caption='Word Cloud for Recommended Skills')
 
-            # Bar Chart for User Engagement Over Time
-            st.subheader("Bar Chart for User Engagement Over Time")
-            user_engagement_chart = px.bar(plot_data.resample('D', on='Timestamp').size(),
-                                            x=plot_data.resample('D', on='Timestamp').size().index,
-                                            y=plot_data.resample('D', on='Timestamp').size(),
-                                            labels={'y': 'Number of Users'}, title='User Engagement Over Time')
-            st.plotly_chart(user_engagement_chart)
-
-            # ... (Continue with other charts if needed)
-
-            # Close the connection
+                       # Close the connection
             connection.close()
         else:
             st.error("Invalid username or password. Please try again.")
