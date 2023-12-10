@@ -41,3 +41,10 @@ def get_latest_data(cursor):
     cursor.execute(query)
     latest_data = cursor.fetchone()
     return latest_data
+
+def get_all_data_sorted(cursor):
+    DB_table_name = 'user_data'
+    query = f"SELECT * FROM {DB_table_name} ORDER BY CAST(resume_score AS SIGNED) DESC" 
+    cursor.execute(query)
+    all_data = cursor.fetchall()
+    return all_data
