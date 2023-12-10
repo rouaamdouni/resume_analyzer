@@ -57,7 +57,7 @@ def calculate_education(education_degree):
     return education_score
 
 
-def calculate_resume_score(resume_data, job_keywords, recommended_skills):
+def calculate_resume_score(resume_data, job_category, recommended_skills):
     # Extract relevant information from the resume data
     resume_skills = resume_data.get('skills', [])
     resume_sections = resume_data.get('sections', [])
@@ -70,19 +70,19 @@ def calculate_resume_score(resume_data, job_keywords, recommended_skills):
     similarity_score = calculate_similarity(resume_data['skills'], recommended_skills)
     completeness_score = calculate_completeness(resume_sections)
     formatting_score = calculate_formatting(resume_text)
-    keywords_score = calculate_keywords(resume_text, job_keywords)
+    keywords_score = calculate_keywords(resume_text, job_category)
     experience_achievements_score = calculate_experience_achievements(experience_years, achievements)
     education_score = calculate_education(education_degree)
 
     # Define weights for each criterion
     weights = {
-        'similarity': 0.2,
-        'completeness': 0.1,
+        'similarity': 0.3,
+        'completeness': 0.2,
         'formatting': 0.1,
         'keywords': 0.1,
-        'experience_achievements': 0.2,
+        'experience_achievements': 0.1,
         'education': 0.1,
-        'language_grammar': 0.2,
+        'language_grammar': 0.1,
     }
 
     # Calculate the overall score

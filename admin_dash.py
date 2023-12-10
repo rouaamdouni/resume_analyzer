@@ -51,7 +51,6 @@ def admin_login():
             fig_user_activity.update_layout(xaxis_title='Timestamp', yaxis_title='Number of Users')
             st.plotly_chart(fig_user_activity)
 
-
             #Pie chart or bar chart showing the distribution of predicted fields for all users.
             fig_predicted_field = px.pie(df_all, names='Predicted Field', title='Distribution of Predicted Fields')
             st.plotly_chart(fig_predicted_field)

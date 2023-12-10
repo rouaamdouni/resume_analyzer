@@ -23,7 +23,7 @@ replace_characters = lambda x: x.replace(' ', ',').replace(',,', ',').replace(':
 columns_to_replace = ['Course Name', 'Course Description', 'Skills']
 data[columns_to_replace] = data[columns_to_replace].applymap(replace_characters)
 
-# print(data.head(5))
+# Creating 'tags' Column
 data['tags'] = data['Course Name'] + data['Difficulty Level'] + data['Course Description'] + data['Skills'] + data[
     'Course URL']
 data['tags'].iloc[1]
@@ -58,9 +58,9 @@ new_df['tags'] = new_df['tags'].apply(stem)  # applying stemming on the tags col
 similarity = cosine_similarity(vectors)
 
 
-def recommendCourse(user_skills, user_job_category):
+def recommendCourse(recommended_skills, user_job_category):
     # Combine user input into a tag
-    user_tags = f"{user_job_category} {user_skills}"
+    user_tags = f"{user_job_category} {recommended_skills}"
 
     # Stemming process
     user_tags = stem(replace_characters(user_tags.lower()))

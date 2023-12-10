@@ -53,18 +53,14 @@ def show_pdf(file_path):
     pdf_display = F'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf"></iframe>'
     st.markdown(pdf_display, unsafe_allow_html=True)
 
-
-##setting the page config title and icon
-st.set_page_config(
-    page_title="Smart Resume Analyzer",
-    page_icon='./Logo/SRA_Logo.ico',
-)
-
+##user login
 def user_login():
     csv_file_path = './datasets/job_skills_extended.csv'
     connection, cursor = connect_to_database()
-
+ 
     create_database(connection, cursor)
+    create_user_data_table(cursor)
+
     st.markdown(
                 '''<h4 style='text-align: left; color: #d73b5c;'> Upload your resume, and get smart recommendation based on it </h4>''',
                 unsafe_allow_html=True)
@@ -102,9 +98,6 @@ def user_login():
 
                     resume_skills = resume_data['skills']
 
-                    # Specify the path to your CSV file
-                    
-
                     # Use the recommend_job_category function
                     recommended_category, recommended_skills = recommend_skills(
                         resume_skills, csv_file_path)
@@ -129,7 +122,6 @@ def user_login():
                     timestamp = str(cur_date + '_' + cur_time)
 
                     # Resume writing recommendation
-                    st.subheader("**Resume Tips & Ideas💡**")
                     st.subheader("**Resume Score📝**")
                     st.markdown(
                         """
@@ -158,8 +150,6 @@ def user_login():
                         "** Note: This score is calculated based on the content that you have added in your Resume. **")
 
                     recommendCourse(recommended_skills, recommended_category)
-                    create_user_data_table(cursor)
-                    print(resume_data['name'], resume_data['email'], resume_score, timestamp, recommended_category, resume_data['skills'], recommended_skills)
                     insert_data(cursor, resume_data['name'], resume_data['email'], str(resume_score), timestamp,
                     recommended_category, str(resume_data['skills']) ,str(recommended_skills))
                     recommendJob(resume_skills, recommended_category)
