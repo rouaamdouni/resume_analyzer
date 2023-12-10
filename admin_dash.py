@@ -23,12 +23,10 @@ def admin_login():
         connection, cursor = connect_to_database()
         create_database(connection, cursor)
         if ad_user in admin_emails and ad_password == ad_password:
-            if(ad_user == 'rouaamdouni0@gmail.com'){
+            if ad_user == 'rouaamdouni0@gmail.com':
                 st.success("Welcome Roua")
-            }
-            else:{
+            else:
                 st.success("Welcome Ali")
-            }
             # st.success("Welcome {}".format(ad_user))
             
             # Display All Data
